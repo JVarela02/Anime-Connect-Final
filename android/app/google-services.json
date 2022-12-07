@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "492859640647",
+    "project_id": "anime-connect-e9676",
+    "storage_bucket": "anime-connect-e9676.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:492859640647:android:eb6f66cd1515e9ed4d9a62",
+        "android_client_info": {
+          "package_name": "com.example.csc_185_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "492859640647-of0ccn1s33kogumoojg4ikdmmeko4dsg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuVg1zIR8XSXyksO8C_PZhkcrIv1EUCzg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "492859640647-of0ccn1s33kogumoojg4ikdmmeko4dsg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
