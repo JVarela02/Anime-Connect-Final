@@ -469,6 +469,9 @@ class userPage extends StatefulWidget {
 }
 
 class _userPageState extends State<userPage> {
+
+  String selectedUsername = "";
+
   List<String> topAnimesreference = []; 
 
   //get animeNames
@@ -545,6 +548,8 @@ class _userPageState extends State<userPage> {
     if(myFriend.isNotEmpty){
       print("List1: " + myFriend[0]);
     }
+    print("The length of list 1 is: " + myFriend.length.toString());
+    checkNotFriend();
   }
 
   Future checkNotFriend() async {
@@ -568,8 +573,10 @@ class _userPageState extends State<userPage> {
       ),
     );
     if(notMyFriend.isNotEmpty){
-      print("List1: " + notMyFriend[0]);
+      print("List2: " + notMyFriend[0]);
     }
+    print("The length of list 2 is: " + notMyFriend.length.toString());
+    checkTheirFriendship();
   }
 
   Future checkTheirFriendship() async {
@@ -593,15 +600,16 @@ class _userPageState extends State<userPage> {
       ),
     );
     if(theirFriend.isNotEmpty){
-      print("List1: " + theirFriend[0]);
+      print("List3: " + theirFriend[0]);
     }
+    print("The length of list 3 is: " + theirFriend.length.toString());
   }
 
-  checkFriendship(){
+  Future checkFriendship() async {
     print("Checking Friendships");
-    checkMyFriendship();
-    checkNotFriend();
-    checkTheirFriendship();
+     await checkMyFriendship();
+    //checkNotFriend();
+    //checkTheirFriendship();
   }
 
   Future getUsertop() async {
@@ -611,6 +619,7 @@ class _userPageState extends State<userPage> {
 
   Future friendshipUpload() async {
     //checkFriendship();
+    print("In friendship upload");
     var userCollection = FirebaseFirestore.instance.collection('users').doc(widget.userIndex);
     var userSnapShot = await userCollection.get();
     var selectedEmail = "";
@@ -618,12 +627,15 @@ class _userPageState extends State<userPage> {
     String userSelectedUser = selectedUser['email'];
     selectedEmail = userSelectedUser;
     if(myFriend.isEmpty && notMyFriend.isEmpty){
+      print("going to upload");
       uploadStatus(user.email.toString(), selectedEmail, true );
     }
     if(myFriend.isNotEmpty){
+      print("updating false");
       updateStatus(user.email.toString(), selectedEmail, false, 1);
     }
     if(notMyFriend.isNotEmpty){
+      print("updating true");
       updateStatus(user.email.toString(), selectedEmail, true, 2);
     }
     Navigator.pop(context);
@@ -640,6 +652,7 @@ class _userPageState extends State<userPage> {
       'friend' : friend,
       'check' : true,
     });
+    print("upload complete");
   }
 
   updateStatus(String logged, String friend, bool checked, int option) {
@@ -649,6 +662,7 @@ class _userPageState extends State<userPage> {
           'friend' : friend,
           'check' : false,
         });
+        print("update flase complete");
     }
     else{
       FirebaseFirestore.instance.collection("friendships").doc(notMyFriend[0]).update({
@@ -656,54 +670,38 @@ class _userPageState extends State<userPage> {
           'friend' : friend,
           'check' : true,
         });
+        print("update true complete");
     }
   }
 
-  Widget buttonText(BuildContext context){
-    checkFriendship();
-    if(myFriend.isEmpty && theirFriend.isEmpty){
-      return Text("Add Friend?",
-            style: TextStyle(color: Colors.white),);
+  createText()  {
+    //checkFriendship();
+    if(myFriend.isEmpty) {
+      print("In first if");
+      return "Add Friend?";
     }
-    if(myFriend.isEmpty && theirFriend.isNotEmpty){
-      return Text("Add Back?",
-            style: TextStyle(color: Colors.white),);
+    if(myFriend.isNotEmpty) {
+      print("In second if");
+      return "Remove Friend?";
     }
-    if(myFriend.isNotEmpty){
-      return Text("Remove Friend?",
-            style: TextStyle(color: Colors.white),);
+    else{
+      print("In else");
+      return "awueifhiewu";
     }
-    else
-    {return Text("fvidjof",
-            style: TextStyle(color: Colors.white),);}
   }
+
 
   @override
   Widget build(BuildContext context) {
-    // checkFriendship();
-    
-    // String buttonText;
-    // if(myFriend.isEmpty && theirFriend.isEmpty){
-    //   buttonText = "Add Friend?";
-    // }
-    // if(myFriend.isNotEmpty){
-    //   buttonText = "Remove Friend?";
-    // }
-    // if(myFriend.isEmpty && theirFriend.isNotEmpty){
-    //   buttonText = "Add Back?";
-    // }
-    // else{
-    //   buttonText = "Error";
-    // }
     return Scaffold(
       appBar: AppBar(
         title:
-         const FittedBox(
+          FittedBox(
            child: Padding(
              padding: EdgeInsets.only(left: 1.0),
              child: Align(
               alignment: Alignment.centerLeft,
-              child: Text("My Account")
+              child: Text("Selected User")
               ),
            ),
          ),
@@ -825,27 +823,51 @@ class _userPageState extends State<userPage> {
 
           Padding(
           padding: const EdgeInsets.only(bottom: 5.0,),
-          child: GestureDetector(
-            onTap: () {
-              friendshipUpload();
-            },
-          child: Container(
-            height: 50,
-            width: 200,
-            decoration: BoxDecoration(
-              color:Color.fromARGB(255, 145, 132, 229),
-              border: Border.all(color: Colors.white,
-             width: 3),
-             borderRadius: BorderRadius.circular(6),
-            ),
-            child: Center(
-            child: buttonText(context)
-            // Text(buttonText,
-            // style: TextStyle(color: Colors.white),
-            // ),
-            ),
-            ),
-            ),
+          child: FutureBuilder(
+            future: checkMyFriendship(),
+            builder: ((context, snapshot) {
+              return GestureDetector(onTap: () {
+                friendshipUpload();
+              },
+            child: Container(
+              height: 50,
+              width: 200,
+              decoration: BoxDecoration(
+                color:Color.fromARGB(255, 145, 132, 229),
+                border: Border.all(color: Colors.white,
+               width: 3),
+               borderRadius: BorderRadius.circular(6),
+              ),
+              child: Center(
+              child: //buttonText(context)
+               Text(createText(),
+               style: TextStyle(color: Colors.white),
+               ),
+              ),
+              ),);
+            }),
+            // child: GestureDetector(
+            //   onTap: () {
+            //     friendshipUpload();
+            //   },
+            // child: Container(
+            //   height: 50,
+            //   width: 200,
+            //   decoration: BoxDecoration(
+            //     color:Color.fromARGB(255, 145, 132, 229),
+            //     border: Border.all(color: Colors.white,
+            //    width: 3),
+            //    borderRadius: BorderRadius.circular(6),
+            //   ),
+            //   child: Center(
+            //   child: //buttonText(context)
+            //    Text(createText(),
+            //    style: TextStyle(color: Colors.white),
+            //    ),
+            //   ),
+            //   ),
+            //   ),
+          ),
         ),
 
         SizedBox(height:10),

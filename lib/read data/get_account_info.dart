@@ -83,6 +83,33 @@ class GetEmail extends StatelessWidget {
   }
 }
 
+class GetFriendEmail extends StatelessWidget {
+  final String friendEmail;
+
+  GetFriendEmail({required this.friendEmail});
+
+  @override
+  Widget build(BuildContext context) {
+
+    //get the collection
+    CollectionReference users = FirebaseFirestore.instance.collection('friendships');
+
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: users.doc(friendEmail).get(),
+      builder: ((context, snapshot) 
+    {
+      if(snapshot.connectionState == ConnectionState.done) {
+        Map<String,dynamic> data = 
+          snapshot.data!.data() as Map<String, dynamic>;
+        return Text(data['friend']);
+      }
+      return Text('Loading ...');
+    }),
+    );
+  }
+}
+
 
 class Getanime1Name extends StatelessWidget {
   final String anime1Name;
