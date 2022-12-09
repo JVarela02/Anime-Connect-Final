@@ -45,21 +45,37 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  Future signUp() async{
-    // authenticate user
-    if (passwordConfirmed()) {
+  Future sendDetails() async {
     await FirebaseAuth.instance.createUserWithEmailAndPassword(
     email: _emailController.text.trim(), 
     password: _passwordController.text.trim()
     );
-
     // add user details
     addUserDetails(
       _firstnameController.text.trim(), 
       _lastnameController.text.trim(), 
       _usernameController.text.trim(), 
       _emailController.text.trim());
+  }
 
+  Future signUp() async{
+    // authenticate user
+    if (passwordConfirmed()) {
+    try{await sendDetails();}catch(e){
+      showDialog(context: context, builder: (context){
+          return const AlertDialog(
+              content: Text("Account with that email already exists"),
+          );
+        });
+    }
+
+    }
+    else{
+      showDialog(context: context, builder: (context){
+          return const AlertDialog(
+              content: Text("Passwords do not Match"),
+          );
+        });
     }
   }
 
